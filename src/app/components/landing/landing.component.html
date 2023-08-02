@@ -1,31 +1,25 @@
 <section class="min-h-screen flex items-center justify-center" id="landing">
-    <div class="absolute inset-0 -z-10 overflow-hidden">
-        <video autoplay loop muted class="object-cover object-center w-full h-full">
-            <source src="../../../assets/landingVideo.mp4" type="video/mp4">
-        </video>
-        <div class="absolute inset-0 -z-5 bg-indigo-950 opacity-50"></div>
-    </div>
+    <div class="absolute inset-0 -z-5 background-color opacity-50"></div>
     <div class="relative z-10">
         <header [ngClass]="{'drop-shadow-md': shouldApplyDropShadow}"
             class="fixed inset-x-0 top-0 bg-white border-b border-gray-200">
             <nav class="flex items-center justify-between p-1 px-8" aria-label="Global">
                 <div class="flex lg:flex-1">
                     <a href="#landing" class="flex items-center">
-                        <svg width="100" height="60" viewBox="0 0 369.89473684210526 206.53620445271827"
-                            class="css-1j8o68f">
-                            <defs id="SvgjsDefs1038">
-                                <linearGradient id="SvgjsLinearGradient1043">
-                                    <stop id="SvgjsStop1044" stop-color="#2B4BDA" offset="0" />
-                                    <stop id="SvgjsStop1045" stop-color="#9333EA" offset="1" />
+                        <svg width="100" height="60" viewBox="0 0 369.89473684210526 206.53620445271827">
+                            <defs>
+                                <linearGradient id="LinearGradient">
+                                    <stop stop-color="#2B4BDA" offset="0" />
+                                    <stop stop-color="#9333EA" offset="1" />
                                 </linearGradient>
                             </defs>
-                            <g id="SvgjsG1039" featurekey="monogramFeature-0"
+                            <g featurekey="monogramFeature-0"
                                 transform="matrix(4.927971365791381,0,0,4.927971365791381,-7.391463582316099,-89.12700092221144)"
-                                fill="url(#SvgjsLinearGradient1043)">
+                                fill="url(#LinearGradient)">
                                 <path
                                     d="M12.236 49.61 c0 1.3413 -1.0929 2.4342 -2.4342 2.4342 l-8.3017 0 l0 -1.2971 l8.3017 0 c0.62376 0 1.1371 -0.50783 1.1371 -1.1371 l0 -31.524 l1.2971 0 l0 31.524 z M14.223 49.483000000000004 c0 2.5281 -2.0534 4.5869 -4.5814 4.5814 l-8.1417 0 l0 -1.2971 l8.1417 0 c1.8105 0 3.2843 -1.4738 3.2843 -3.2843 l0 -31.397 l1.2971 0 l0 31.397 z M16.216 50.0904 c0 3.2677 -2.6606 5.9282 -5.9283 5.9282 l-8.7875 0 l0 -1.2971 l8.7875 0 c2.5557 0 4.6312 -2.081 4.6312 -4.6311 l0 -32.004 l1.2971 0 l0 32.004 z M18.203 50.4324 c0 4.1509 -3.3781 7.5288 -7.5288 7.5288 l-9.1684 0 l0 -1.2971 l9.1684 0 c3.4333 0 6.2316 -2.793 6.2316 -6.2316 l0 -32.346 l1.2971 0 l0 32.346 z M18.893 18.086 l1.2972 -0.000058594 l0 32.776 c0 5.0396 -4.0957 9.135 -9.135 9.135 l-9.5492 0 l0 -1.2971 l9.5492 0 c4.322 0 7.8378 -3.5161 7.8378 -7.8378 l0 -32.776 z" />
                             </g>
-                            <g id="SvgjsG1040" featurekey="nameFeature-0"
+                            <g featurekey="nameFeature-0"
                                 transform="matrix(2.1624196066567634,0,0,2.1624196066567634,106.59377569261468,49.375803933432366)"
                                 fill="#000">
                                 <path
@@ -121,12 +115,12 @@
         <div
             class="z-10 gap-8 items-center py-8 px-4 max-w-screen-xl xl:gap-16 md:grid md:grid-cols-2 sm:py-24 lg:px-6">
             <div class="mt-4 md:mt-0">
-                <h1 class="my-10 text-5xl md:text-7xl text-gray-100 font-bold sm:tracking-tight mb-4"
-                    data-aos="zoom-y-out"> Welcome to the Stock Market <span
-                        class="bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-purple-600">Analyser</span>
+                <h1 class="my-10 text-5xl md:text-7xl text-gray-800 font-bold sm:tracking-tight mb-4"> Welcome to the
+                    Stock Market <span
+                        class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">Analyser</span>
                 </h1>
                 <div class="max-w-6xl pt-6">
-                    <p class="text-lg text-justify text-gray-100 mb-8" data-aos="zoom-y-out" data-aos-delay="150">
+                    <p class="text-md text-gray-600 mb-8 tracking-tight">
                         Unlock the
                         full
                         potential of stock analysis with our cutting-edge web application, empowering you to
@@ -134,28 +128,28 @@
                         investment decisions effortlessly. Get started today and embark on a journey of maximizing
                         your
                         investments for long-term success!</p>
-                    <div class="flex flex-col justify-start button-container md:flex-row" data-aos="zoom-y-out"
-                        data-aos-delay="300">
-                        <div class="flex justify-start button-container">
-                            <a routerLink="/register" class="text-white hover:text-gray-300 my-2 flex items-center">
-                                <svg class="w-8 mr-2" viewBox="0 0 38 38" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path opacity="0.4" fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M19 37C9.05887 37 1 28.9411 1 19C1 9.05887 9.05887 1 19 1C28.9411 1 37 9.05887 37 19C37 28.9411 28.9411 37 19 37Z"
-                                        stroke="#FFFFFF"></path>
-                                    <path
-                                        d="M21.9657 12L28.9287 18.963L21.9657 25.926L20.7348 24.7193L25.6203 19.8334L10.0001 19.8334V18.0926L25.5966 18.0926L20.7348 13.2309L21.9657 12Z"
-                                        fill="#FFFFFF"></path>
-                                    <path
-                                        d="M21.9657 12L28.9287 18.963L21.9657 25.926L20.7348 24.7193L25.6203 19.8334L10.0001 19.8334V18.0926L25.5966 18.0926L20.7348 13.2309L21.9657 12Z"
-                                        fill="#FFFFFF"></path>
-                                </svg>
-                                <span class="text-lg font-semibold">Sign Up</span>
-                            </a>
-                        </div>
+                    <div class="flex flex-col button-container md:flex-row">
+                        <a routerLink="/register" class="text-black hover:text-gray-600 my-2 flex items-center">
+                            <svg class="w-8 mr-2 " viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.4" fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M19 37C9.05887 37 1 28.9411 1 19C1 9.05887 9.05887 1 19 1C28.9411 1 37 9.05887 37 19C37 28.9411 28.9411 37 19 37Z"
+                                    stroke="#000"></path>
+                                <path
+                                    d="M21.9657 12L28.9287 18.963L21.9657 25.926L20.7348 24.7193L25.6203 19.8334L10.0001 19.8334V18.0926L25.5966 18.0926L20.7348 13.2309L21.9657 12Z"
+                                    fill="#000"></path>
+                                <path
+                                    d="M21.9657 12L28.9287 18.963L21.9657 25.926L20.7348 24.7193L25.6203 19.8334L10.0001 19.8334V18.0926L25.5966 18.0926L20.7348 13.2309L21.9657 12Z"
+                                    fill="#000"></path>
+                            </svg>
+                            <span class="text-lg font-semibold">Sign Up</span>
+                        </a>
                     </div>
+
                 </div>
             </div>
+            <img class="w-full hidden sm:block"
+                src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/cta/cta-dashboard-mockup-dark.svg"
+                alt="dashboard image">
         </div>
     </div>
 </section>

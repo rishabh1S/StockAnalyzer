@@ -28,48 +28,23 @@ export class MarketComponent implements OnInit, OnDestroy {
   }
 
   getStockName(index: number): string {
-    if (this.trendingStocks[index]) {
-      const name = this.trendingStocks[index].name;
-      return name !== undefined
-        ? name.split(' ').slice(0, 2).join(' ')
-        : 'Not Available';
-    } else {
-      return 'Not Available';
-    }
+    return this.trendingStocks[index]?.name || 'Not Available';
   }
 
   getStockSymbol(index: number): string {
-    if (this.trendingStocks[index]) {
-      return this.trendingStocks[index].symbol || '';
-    } else {
-      return 'NA';
-    }
+    return this.trendingStocks[index]?.symbol || 'NA';
   }
 
   getStockPrice(index: number): number {
-    if (this.trendingStocks[index]) {
-      return this.trendingStocks[index].c || 0;
-    } else {
-      return 0;
-    }
+    return this.trendingStocks[index]?.c || 0;
   }
 
   getStockPercentage(index: number): number {
-    if (this.trendingStocks[index]) {
-      const dp = this.trendingStocks[index].dp;
-      return dp !== null ? dp.toFixed(2) : 0;
-    } else {
-      return 0;
-    }
+    return this.trendingStocks[index]?.dp?.toFixed(2) || 0;
   }
 
   getMarketCap(index: number): number {
-    if (this.trendingStocks[index]) {
-      const mc = this.trendingStocks[index].mc;
-      return mc !== undefined ? mc.toLocaleString() : 0;
-    } else {
-      return 0;
-    }
+    return this.trendingStocks[index]?.mc || 0;
   }
 
   ngOnDestroy() {

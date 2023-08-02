@@ -88,7 +88,7 @@ export class StockDataService {
   getTrendingStocks(): Observable<any> {
     const trendingStocksUrl = `https://finnhub.io/api/v1/stock/symbol?exchange=US&token=${this.finnhubAPIKey}`;
 
-    return interval(6000).pipe(
+    return interval(10000).pipe(
       startWith(0),
       switchMap(() => this.http.get<any[]>(trendingStocksUrl)),
       switchMap((symbols: any[]) => {

@@ -6,14 +6,12 @@ import { LandingComponent } from './components/landing/landing.component';
 import { RegistrationComponent } from './components/registration/registration.component';
 import { LoginComponent } from './components/login/login.component';
 import { MainComponent } from './components/main/main.component';
-import { AboutComponent } from './components/about/about.component';
 
 const routes: Routes = [
   { path: '', component: LandingComponent },
   { path: 'register', component: RegistrationComponent },
   { path: 'login', component: LoginComponent },
   { path: 'main', component: MainComponent, canActivate: [AuthGuard] },
-  { path: 'about', component: AboutComponent },
   // Add other routes as needed
 ];
 
