@@ -61,7 +61,7 @@ export class StockDataService {
         functionParam = 'TIME_SERIES_INTRADAY&interval=30min';
         break;
       case 'Daily':
-        functionParam = 'TIME_SERIES_DAILY_ADJUSTED';
+        functionParam = 'TIME_SERIES_DAILY';
         break;
       case 'Weekly':
         functionParam = 'TIME_SERIES_WEEKLY_ADJUSTED';
@@ -71,7 +71,7 @@ export class StockDataService {
         break;
       default:
         // Default to Intraday with Daily interval
-        functionParam = 'TIME_SERIES_DAILY_ADJUSTED';
+        functionParam = 'TIME_SERIES_DAILY';
         break;
     }
 
