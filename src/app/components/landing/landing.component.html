@@ -1,5 +1,5 @@
 <section class="min-h-screen flex items-center justify-center" id="landing">
-    <div class="absolute inset-0 -z-5 background-color opacity-50"></div>
+    <div class="absolute inset-0 background-color opacity-50"></div>
     <div class="relative z-10">
         <header [ngClass]="{'drop-shadow-md': shouldApplyDropShadow}"
             class="fixed inset-x-0 top-0 bg-white border-b border-gray-200">
@@ -47,8 +47,8 @@
                     <a href="#support" class="text-sm font-semibold leading-6 text-gray-900">Support</a>
                 </div>
                 <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                    <a routerLink="/login" class="text-sm font-semibold leading-6 text-gray-900">Log in <span
-                            aria-hidden="true">&rarr;</span></a>
+                    <a routerLink="/login" class="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-600">Log
+                        in <span aria-hidden="true">&rarr;</span></a>
                 </div>
             </nav>
             <!-- Mobile menu, show/hide based on menu open state. -->
@@ -115,7 +115,7 @@
         <div
             class="z-10 gap-8 items-center py-8 px-4 max-w-screen-xl xl:gap-16 md:grid md:grid-cols-2 sm:py-24 lg:px-6">
             <div class="mt-4 md:mt-0">
-                <h1 class="my-10 text-5xl md:text-7xl text-gray-800 font-bold sm:tracking-tight mb-4"> Welcome to the
+                <h1 class="my-10 text-5xl md:text-7xl text-gray-800 font-bold tracking-tight mb-4"> Welcome to the
                     Stock Market <span
                         class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">Analyser</span>
                 </h1>

@@ -12,27 +12,15 @@ import { Observable, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { StockDataService } from '../../services/stock-data.service';
 import { Router } from '@angular/router';
-import { Chart } from 'chart.js/auto';
-import 'chartjs-adapter-moment';
 import getSymbolFromCurrency from 'currency-symbol-map';
-import { format } from 'date-fns';
-import { enUS } from 'date-fns/locale';
+import ApexCharts from 'apexcharts';
+import { formatDate } from '@angular/common';
 
 interface SearchResult {
   '1. symbol': string;
   '2. name': string;
   '4. region': string;
-  '5. marketOpen': string;
-  '6. marketClose': string;
   '8. currency': string;
-  // Add other properties if needed...
-}
-
-interface StockNews {
-  title: string;
-  source: string;
-  summary: string;
-  published: Date;
 }
 
 @Component({
@@ -41,27 +29,22 @@ interface StockNews {
   styleUrls: ['./main.component.css'],
 })
 export class MainComponent implements OnInit, OnDestroy {
-  isProfileDropdownOpen = false;
+  searchSubscription: Subscription | undefined;
   searchResults: SearchResult[] = [];
-  stockQuote: any = null; // Store the stock quote information
+  stockQuote: any = null;
   searchKeywords = new FormControl();
+  isProfileDropdownOpen = false;
   isDropdownOpen: boolean = false;
   isSearchBarOpen: boolean = false;
-  showSearchBar = false;
+  shouldApplyDropShadow: boolean = false;
+  showSearchBar: boolean = false;
   selectedIndex = -1;
   selectedSymbol: string = '';
   selectedStockName = '';
   selectedStockCurrency = '';
-  selectedStockMarketOpen = '';
-  selectedStockMarketClose = '';
-  searchSubscription: Subscription | undefined;
-  currentDateTime: string = '';
   lastRefreshedDate: string = '';
-  chart: Chart | undefined;
   selectedInterval: string = 'Daily';
-  stockNews: StockNews[] = [];
-  shouldApplyDropShadow = false;
-  @ViewChild('chartCanvas') chartCanvas!: ElementRef;
+  chart: ApexCharts | undefined;
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
   constructor(
@@ -96,97 +79,6 @@ export class MainComponent implements OnInit, OnDestroy {
       });
   }
 
-  initializeChart(): void {
-    const ctx = document.getElementById('chart') as HTMLCanvasElement;
-    this.chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: [
-          {
-            label: '',
-            data: [],
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-            borderColor: 'rgba(255, 255, 255, 1)',
-            tension: 0.1,
-            pointRadius: 0,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        aspectRatio: 1.5, // Adjust the aspect ratio to make the chart taller
-        maintainAspectRatio: false, // Disable maintaining aspect ratio
-        interaction: {
-          intersect: false,
-          mode: 'nearest',
-        },
-        plugins: {
-          legend: {
-            display: false, // Set legend display to false
-          },
-        },
-        hover: {
-          intersect: false,
-          mode: 'nearest',
-        },
-        scales: {
-          x: {
-            type: 'timeseries',
-            time: {
-              tooltipFormat: 'll',
-              displayFormats: {
-                minute: 'h:mm a',
-                hour: 'hA',
-                day: 'MMM D',
-                week: 'll',
-                month: 'YYYY',
-              },
-            },
-            ticks: {
-              color: 'rgba(255, 255, 255, 1)',
-              maxTicksLimit: 5,
-              padding: 10,
-            },
-            grid: {
-              display: true, // Set display to true to show grid markings
-              color: 'rgba(128, 128, 128, 1)',
-              drawOnChartArea: false,
-            },
-            border: {
-              color: 'rgba(128, 128, 128, 1)', // Set the color of the Y-axis line
-              width: 1,
-            },
-          },
-          y: {
-            ticks: {
-              color: 'rgba(255, 255, 255, 1)',
-              padding: 10,
-            },
-            grid: {
-              display: true,
-              color: 'rgba(255, 255, 255, 0.1)',
-            },
-            border: {
-              color: 'rgba(31, 41, 55, 1)', // Set the color of the Y-axis line
-              width: 1,
-            },
-          },
-        },
-        elements: {
-          line: {
-            backgroundColor: 'rgba(255, 255, 255, 0.1)', // Set light white color for the area inside the line
-            borderColor: 'rgba(255, 255, 255, 1)',
-            tension: 0.5,
-            fill: {
-              target: 'origin', // Fill the area below the line to the x-axis
-            },
-          },
-        },
-      },
-    });
-  }
-
   ngOnDestroy(): void {
     this.searchSubscription?.unsubscribe();
   }
@@ -201,6 +93,11 @@ export class MainComponent implements OnInit, OnDestroy {
     const target = event.target as HTMLElement;
     const dropdowns = document.getElementsByClassName('dropdown');
     const searchInput = this.searchInput.nativeElement;
+    const profileButton = document.getElementById('profile-button');
+
+    if (profileButton && !profileButton.contains(target)) {
+      this.isProfileDropdownOpen = false;
+    }
 
     let isTargetInsideDropdown = false;
     for (let i = 0; i < dropdowns.length; i++) {
@@ -210,68 +107,97 @@ export class MainComponent implements OnInit, OnDestroy {
         break;
       }
     }
-
     if (!isTargetInsideDropdown && target !== searchInput) {
       this.isDropdownOpen = false;
     }
   }
 
-  getCurrencySymbol(currency: string): string {
-    const currencySymbol = getSymbolFromCurrency(currency);
-    if (currencySymbol) {
-      return currencySymbol;
-    }
-    return '';
-  }
-
-  formatDate(lastRefreshedDate: string): string {
-    if (!lastRefreshedDate) {
-      return ''; // or any default value you want to display
-    }
-    const dateObject = new Date(lastRefreshedDate);
-    const formattedDate = format(dateObject, 'MMM do, h:mm:ss a', {
-      locale: enUS,
-    });
-    return formattedDate + ' UTC-5:00';
-  }
-
-  toggleProfileDropdown(): void {
-    this.isProfileDropdownOpen = !this.isProfileDropdownOpen;
-  }
-
-  toggleSearchIcon(): void {
-    this.isSearchBarOpen = !this.isSearchBarOpen;
-  }
-
-  switchAccount(): void {
-    this.router.navigateByUrl('/login');
-  }
-
-  logout() {
-    // Perform any necessary logout logic (e.g., clearing session data)
-    this.authService.signOut().then(() => {
-      console.log('Logout Successfull');
-      this.router.navigate(['/login']);
-    });
-  }
-
-  toggleDropdown() {
-    this.isDropdownOpen = true;
-  }
-
-  toggleSearchBar(): void {
-    if (window.innerWidth < 992) {
-      this.showSearchBar = !this.showSearchBar;
+  initializeChart(): void {
+    const options = this.getChartOptions();
+    if (
+      document.getElementById('area-chart') &&
+      typeof ApexCharts !== 'undefined'
+    ) {
+      this.chart = new ApexCharts(
+        document.getElementById('area-chart'),
+        options
+      );
+      this.chart.render();
     }
   }
 
-  closeDropdown(): void {
-    this.isDropdownOpen = false;
-  }
-
-  clearSearch(): void {
-    this.searchKeywords.setValue('');
-    this.closeDropdown();
+  getChartOptions() {
+    return {
+      chart: {
+        height: '100%',
+        maxWidth: '100%',
+        type: 'area',
+        fontFamily: 'Inter, sans-serif',
+        dropShadow: {
+          enabled: false,
+        },
+        toolbar: {
+          show: false,
+        },
+      },
+      tooltip: {
+        enabled: true,
+        x: {
+          show: false,
+        },
+      },
+      fill: {
+        type: 'gradient',
+        gradient: {
+          opacityFrom: 0.55,
+          opacityTo: 0,
+          shade: '', // The shade color will be set dynamically
+          gradientToColors: [], // The gradient color will be set dynamically
+        },
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        width: 3,
+      },
+      grid: {
+        show: false,
+        strokeDashArray: 4,
+        padding: {
+          left: 2,
+          right: 2,
+          top: 0,
+        },
+      },
+      series: [
+        {
+          name: 'Price',
+          data: [],
+        },
+      ],
+      xaxis: {
+        categories: [],
+        labels: {
+          show: false,
+        },
+        axisBorder: {
+          show: false,
+        },
+        axisTicks: {
+          show: false,
+        },
+      },
+      yaxis: {
+        show: true,
+        labels: {
+          show: true,
+          style: {
+            colors: '#9CA3AF',
+          },
+        },
+      },
+    };
   }
 
   searchStocks(event: Event) {
@@ -311,71 +237,78 @@ export class MainComponent implements OnInit, OnDestroy {
         let prices: number[] = [];
         this.lastRefreshedDate = data['Meta Data']['3. Last Refreshed'];
 
-        if (interval === '1min') {
-          // Handle 1 Day intervals
-          if (data && data['Time Series (1min)']) {
-            const latestDate =
-              data['Meta Data']['3. Last Refreshed'].split(' ')[0];
-            timestamps = Object.keys(data['Time Series (1min)']).filter(
-              (timestamp: string) => timestamp.startsWith(latestDate)
-            );
-            prices = timestamps.map((timestamp: string) =>
-              parseFloat(data['Time Series (1min)'][timestamp]['4. close'])
-            );
-          }
-        } else if (interval === '30min') {
-          // Handle 5 Day interval
-          if (data && data['Time Series (30min)']) {
-            timestamps = Object.keys(data['Time Series (30min)']).slice(0, 50);
-            prices = timestamps.map((timestamp: string) =>
-              parseFloat(data['Time Series (30min)'][timestamp]['4. close'])
-            );
-          }
-        } else if (interval === 'Daily') {
-          // Handle 1 Month interval
-          if (data && data['Time Series (Daily)']) {
-            timestamps = Object.keys(data['Time Series (Daily)']).slice(0, 30); // Get the latest 30 points
-            prices = timestamps.map((timestamp: string) =>
-              parseFloat(data['Time Series (Daily)'][timestamp]['4. close'])
-            );
-          }
-        } else if (interval === 'Weekly') {
-          // Handle 1 Year interval
-          if (data && data['Weekly Adjusted Time Series']) {
-            timestamps = Object.keys(data['Weekly Adjusted Time Series']).slice(
-              0,
-              52
-            ); // Get the latest 52 points
-            prices = timestamps.map((timestamp: string) =>
-              parseFloat(
-                data['Weekly Adjusted Time Series'][timestamp]['4. close']
-              )
-            );
-          }
-        } else if (interval === 'Monthly') {
-          // Handle 5 Year interval
-          if (data && data['Monthly Adjusted Time Series']) {
-            timestamps = Object.keys(
-              data['Monthly Adjusted Time Series']
-            ).slice(0, 60); // Get the latest 60 points
-            prices = timestamps.map((timestamp: string) =>
-              parseFloat(
-                data['Monthly Adjusted Time Series'][timestamp]['4. close']
-              )
-            );
+        const intervalMappings: {
+          [key: string]: { dataKey: string; points?: number };
+        } = {
+          '1min': { dataKey: 'Time Series (1min)' },
+          '30min': { dataKey: 'Time Series (30min)', points: 50 },
+          Daily: { dataKey: 'Time Series (Daily)', points: 30 },
+          Weekly: { dataKey: 'Weekly Time Series', points: 52 },
+          Monthly: { dataKey: 'Monthly Time Series', points: 60 },
+        };
+
+        if (data && intervalMappings[interval]) {
+          const { dataKey, points } = intervalMappings[interval];
+          timestamps = Object.keys(data[dataKey]);
+          prices = timestamps.map((timestamp: string) =>
+            parseFloat(data[dataKey][timestamp]['4. close'])
+          );
+          if (points) {
+            timestamps = timestamps.slice(0, points);
+            prices = prices.slice(0, points);
           }
         }
 
-        // Convert timestamps to JavaScript Date objects
-        const formattedTimestamps: Date[] = timestamps.map(
-          (timestamp: string) => new Date(timestamp)
-        );
+        // Reverse the order of data points
+        timestamps = timestamps.reverse();
+        prices = prices.reverse();
+
+        // Define date format strings
+        const dateFormatMap: { [key: string]: string } = {
+          '1min': 'h:mm a',
+          '30min': 'MMM d, h:mm a',
+          Daily: 'MMM d',
+          Weekly: 'MMM yyyy',
+          Monthly: 'MMM yyyy',
+        };
 
         // Update the chart data
         if (this.chart) {
-          this.chart.data.labels = formattedTimestamps;
-          this.chart.data.datasets[0].data = prices;
-          this.chart.update();
+          let formattedTimestamps: string[] = [];
+          if (interval === '1min') {
+            formattedTimestamps = formattedTimestamps = timestamps.map(
+              (timestamp: string) =>
+                formatDate(new Date(timestamp), 'h:mm a', 'en-US')
+            );
+          } else if (interval === '30min') {
+            formattedTimestamps = timestamps.map((timestamp: string) =>
+              formatDate(new Date(timestamp), 'MMM d, h:mm a', 'en-US')
+            );
+          } else if (interval === 'Daily') {
+            formattedTimestamps = timestamps.map((timestamp: string) =>
+              formatDate(new Date(timestamp), 'MMM d', 'en-US')
+            );
+          } else if (interval === 'Weekly') {
+            formattedTimestamps = timestamps.map((timestamp: string) =>
+              formatDate(new Date(timestamp), 'MMM yyyy', 'en-US')
+            );
+          } else if (interval === 'Monthly') {
+            formattedTimestamps = timestamps.map((timestamp: string) =>
+              formatDate(new Date(timestamp), 'MMM yyyy', 'en-US')
+            );
+          }
+
+          this.chart.updateSeries([
+            {
+              name: 'Prices',
+              data: prices,
+            },
+          ]);
+          this.chart.updateOptions({
+            xaxis: {
+              categories: formattedTimestamps,
+            },
+          });
         }
       },
       error: (error: any) => {
@@ -388,29 +321,89 @@ export class MainComponent implements OnInit, OnDestroy {
         this.stockQuote = quote['Global Quote'];
         this.selectedStockName = this.getStockName(symbol);
         this.selectedStockCurrency = this.getStockCurrency(symbol);
-        this.selectedStockMarketOpen = this.getStockMo(symbol);
-        this.selectedStockMarketClose = this.getStockMc(symbol);
         this.closeDropdown();
         const changePercent = parseFloat(
           quote['Global Quote']['10. change percent'].replace('%', '')
         );
         let lineColor: string;
+        let gradientFromColor: string = '';
+        let gradientToColor: string = '';
         if (changePercent > 0) {
           lineColor = 'rgba(0, 255, 0, 1)';
+          gradientFromColor = 'rgba(0, 255, 0, 0.25)';
+          gradientToColor = 'rgba(0, 255, 0, 0.05)';
         } else if (changePercent < 0) {
           lineColor = 'rgba(255, 0, 0, 1)';
+          gradientFromColor = 'rgba(255, 0, 0, 0.25)';
+          gradientToColor = 'rgba(255, 0, 0, 0.05)';
         } else {
-          lineColor = 'rgba(255, 255, 255, 1)';
+          lineColor = 'rgba(0, 143, 251, 1)';
+          gradientFromColor = 'rgba(0, 143, 251, 0.25)';
+          gradientToColor = 'rgba(0, 143, 251, 0.05)';
         }
+
         if (this.chart) {
-          this.chart.data.datasets[0].borderColor = lineColor;
-          this.chart.update();
+          this.chart.updateOptions({
+            colors: [lineColor],
+            fill: {
+              gradient: {
+                shade: gradientFromColor, // Update the gradient shade color
+                gradientToColors: [gradientToColor], // Update the gradient colors
+              },
+            },
+          });
         }
       },
       error: (error: any) => {
         console.error('Error retrieving stock quote:', error);
       },
     });
+  }
+
+  switchAccount(): void {
+    this.router.navigateByUrl('/login');
+  }
+
+  logout() {
+    this.authService.signOut().then(() => {
+      console.log('Logout Successfull');
+      this.router.navigate(['/login']);
+    });
+  }
+
+  toggleProfileDropdown(): void {
+    this.isProfileDropdownOpen = !this.isProfileDropdownOpen;
+  }
+
+  toggleSearchIcon(): void {
+    this.isSearchBarOpen = !this.isSearchBarOpen;
+  }
+
+  toggleDropdown() {
+    this.isDropdownOpen = true;
+  }
+
+  toggleSearchBar(): void {
+    if (window.innerWidth < 992) {
+      this.showSearchBar = !this.showSearchBar;
+    }
+  }
+
+  closeDropdown(): void {
+    this.isDropdownOpen = false;
+  }
+
+  clearSearch(): void {
+    this.searchKeywords.setValue('');
+    this.closeDropdown();
+  }
+
+  getCurrencySymbol(currency: string): string {
+    const currencySymbol = getSymbolFromCurrency(currency);
+    if (currencySymbol) {
+      return currencySymbol;
+    }
+    return '';
   }
 
   getStockName(symbol: string): string {
@@ -425,18 +418,5 @@ export class MainComponent implements OnInit, OnDestroy {
       (result) => result['1. symbol'] === symbol
     );
     return stock ? stock['8. currency'] : '';
-  }
-
-  getStockMo(symbol: string): string {
-    const stock = this.searchResults.find(
-      (result) => result['1. symbol'] === symbol
-    );
-    return stock ? stock['5. marketOpen'] : '';
-  }
-  getStockMc(symbol: string): string {
-    const stock = this.searchResults.find(
-      (result) => result['1. symbol'] === symbol
-    );
-    return stock ? stock['6. marketClose'] : '';
   }
 }

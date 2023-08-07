@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {
   Observable,
@@ -16,12 +16,15 @@ import { environment } from '../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class StockDataService {
+export class StockDataService implements OnDestroy {
   //Alpha Vantage
   private vantageApiBaseUrl = 'https://www.alphavantage.co';
   private vantageAPIKey1: string = environment.VantageAPIKey1;
-  private vantageAPIKey2: string = environment.VantageAPIKey2;
-  private vantageAPIKey3: string = environment.VantageAPIKey3;
+
+  //Rapid API
+  private rapidApiHost: string = environment.RapidAPIHost;
+  private rapidApiKey1: string = environment.RapidAPIKey1;
+  private rapidApiKey2: string = environment.RapidAPIKey2;
 
   //Finnhub
   private finnhubAPIKey: string = environment.FinnhubAPIKey;
@@ -33,22 +36,26 @@ export class StockDataService {
 
   constructor(private http: HttpClient) {}
 
-  private getHeaders(): HttpHeaders {
-    return new HttpHeaders();
-  }
-
   getSymbolSearchObservable(): Observable<string> {
     return this.selectedSymbolSubject.asObservable();
   }
 
   searchStocks(keywords: string): Observable<any> {
-    const url = `${this.vantageApiBaseUrl}/query?function=SYMBOL_SEARCH&keywords=${keywords}&apikey=${this.vantageAPIKey1}`;
-    return this.http.get(url, { headers: this.getHeaders() });
+    const url = `https://alpha-vantage.p.rapidapi.com/query?function=SYMBOL_SEARCH&keywords=${keywords}`;
+    const headers = new HttpHeaders({
+      'x-rapidapi-host': this.rapidApiHost,
+      'x-rapidapi-key': this.rapidApiKey1,
+    });
+    return this.http.get(url, { headers });
   }
 
   getStockQuote(symbol: string): Observable<any> {
-    const url = `${this.vantageApiBaseUrl}/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${this.vantageAPIKey3}`;
-    return this.http.get(url, { headers: this.getHeaders() });
+    const url = `https://alpha-vantage.p.rapidapi.com/query?function=GLOBAL_QUOTE&symbol=${symbol}`;
+    const headers = new HttpHeaders({
+      'x-rapidapi-host': this.rapidApiHost,
+      'x-rapidapi-key': this.rapidApiKey2,
+    });
+    return this.http.get(url, { headers });
   }
 
   fetchStockData(symbol: string, interval: string): Observable<any> {
@@ -61,26 +68,21 @@ export class StockDataService {
         functionParam = 'TIME_SERIES_INTRADAY&interval=30min';
         break;
       case 'Daily':
-        functionParam = 'TIME_SERIES_DAILY_ADJUSTED';
+        functionParam = 'TIME_SERIES_DAILY';
         break;
       case 'Weekly':
-        functionParam = 'TIME_SERIES_WEEKLY_ADJUSTED';
+        functionParam = 'TIME_SERIES_WEEKLY';
         break;
       case 'Monthly':
-        functionParam = 'TIME_SERIES_MONTHLY_ADJUSTED';
+        functionParam = 'TIME_SERIES_MONTHLY';
         break;
       default:
         // Default to Intraday with Daily interval
-        functionParam = 'TIME_SERIES_DAILY_ADJUSTED';
+        functionParam = 'TIME_SERIES_DAILY';
         break;
     }
 
-    const url = `${this.vantageApiBaseUrl}/query?function=${functionParam}&symbol=${symbol}&apikey=${this.vantageAPIKey3}`;
-    return this.http.get(url);
-  }
-
-  fetchNews(): Observable<any> {
-    const url = `${this.vantageApiBaseUrl}/query?function=NEWS_SENTIMENT&apikey=${this.vantageAPIKey2}`;
+    const url = `${this.vantageApiBaseUrl}/query?function=${functionParam}&symbol=${symbol}&apikey=${this.vantageAPIKey1}`;
     return this.http.get(url);
   }
 
