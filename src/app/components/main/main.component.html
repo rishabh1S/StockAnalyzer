@@ -269,7 +269,7 @@
         </div>
         <div *ngFor="let news of getDisplayedNews()" class="bg-gray-900 border rounded-lg shadow border-gray-700">
             <a [href]="news.url" target="_blank">
-                <img class="rounded-t-lg" [src]="news.banner_image" alt="{{ news.title }}" />
+                <img class="rounded-t-lg h-48 w-full object-cover" [src]="news.banner_image" alt="{{ news.title }}" />
             </a>
             <div class="p-5">
                 <a [href]="news.url" target="_blank">
