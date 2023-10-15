@@ -31,6 +31,9 @@ interface SearchResult {
 export class MainComponent implements OnInit, OnDestroy {
   searchSubscription: Subscription | undefined;
   searchResults: SearchResult[] = [];
+  newsData: any[] = [];
+  currentIndex = 0;
+  interval: any;
   stockQuote: any = null;
   searchKeywords = new FormControl();
   isProfileDropdownOpen = false;
@@ -77,6 +80,12 @@ export class MainComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.initializeChart();
       });
+
+    // Fetch news data when the component initializes
+    this.stockDataService.getNewsSentiment().subscribe((data: any) => {
+      this.newsData = data.feed;
+      this.startCarousel();
+    });
   }
 
   ngOnDestroy(): void {
@@ -110,6 +119,25 @@ export class MainComponent implements OnInit, OnDestroy {
     if (!isTargetInsideDropdown && target !== searchInput) {
       this.isDropdownOpen = false;
     }
+  }
+
+  startCarousel() {
+    setInterval(() => {
+      this.currentIndex = (this.currentIndex + 1) % this.newsData.length;
+    }, 5000);
+  }
+
+  getDisplayedNews() {
+    return this.newsData.slice(this.currentIndex, this.currentIndex + 4);
+  }
+
+  nextSlide() {
+    this.currentIndex = (this.currentIndex + 1) % this.newsData.length;
+  }
+
+  prevSlide() {
+    this.currentIndex =
+      (this.currentIndex - 1 + this.newsData.length) % this.newsData.length;
   }
 
   initializeChart(): void {
