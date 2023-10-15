@@ -86,6 +86,11 @@ export class StockDataService implements OnDestroy {
     return this.http.get(url);
   }
 
+  getNewsSentiment(): Observable<any> {
+    const url = `${this.vantageApiBaseUrl}/query?function=NEWS_SENTIMENT&apikey=${this.vantageAPIKey1}`;
+    return this.http.get(url);
+  }
+
   // Market Page
   getTrendingStocks(): Observable<any> {
     const trendingStocksUrl = `https://finnhub.io/api/v1/stock/symbol?exchange=US&token=${this.finnhubAPIKey}`;
