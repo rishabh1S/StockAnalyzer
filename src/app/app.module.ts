@@ -23,6 +23,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { FeatureComponent } from './components/feature/feature.component';
 import { MarketComponent } from './components/market/market.component';
 import { PagenotFoundComponent } from './components/pagenot-found/pagenot-found.component';
+import { NewsComponent } from './components/news/news.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { PagenotFoundComponent } from './components/pagenot-found/pagenot-found.
     FeatureComponent,
     MarketComponent,
     PagenotFoundComponent,
+    NewsComponent,
   ],
   imports: [
     BrowserModule,
